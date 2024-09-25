@@ -3,24 +3,41 @@
 #include <windows.h>
 #include <vector>
 
-#define JMP_TO_NEXT_HANDLER \
-    0x41, 0x8B, 0x45, 0x00,   /* mov eax, dword ptr [r13] */ \
-    0x49, 0x83, 0xC5, 0x04,   /* add r13, 0x04 */ \
-    0x4C, 0x01, 0xF0,         /* add rax, r14 */ \
-    0xFF, 0xE0,               /* jmp rax */
-
-/*
+/* 
 
 afaik, stack collision check is only required for
 handlers that push values onto stack, or modify the vsp. They
 shouldn't be required on other handlers since they operate
 within a safe range (I think).
 
+Reason we require the check after the main part of PopRSP64, ..., PopRSP8 has executed
+is due to the fact this could result in a collision depending on how rsp was
+affected. Similarly, inside CONTEXT_COLLISION_CHECK we select the smallest
+value between rsp & r15 to determine where we will base our vmctx relocation.
+
 */
 
 #define CONTEXT_COLLISION_CHECK \
-	0x90,
+	0x48, 0x8D, 0xB4, 0x24, 0x97, 0x00, 0x00, 0x00,   /* lea rsi, qword ptr [rsp+0x97] */ \
+	0x49, 0x39, 0xF7,                                 /* cmp r15, rsi */ \
+	0x7F, 0x22,                                       /* jg NO_COLLISION */ \
+	0x48, 0x89, 0xE7,                                 /* mov rdi, rsp */ \
+	0x49, 0x39, 0xFF,                                 /* cmp r15, rdi */ \
+	0x49, 0x0F, 0x42, 0xFF,                           /* cmovb rdi, r15 */ \
+	0x48, 0x83, 0xEF, 0x40,                           /* sub rdi, 0x40 */ \
+	0x48, 0x83, 0xEE, 0x08,                           /* sub rsi, 0x08 */ \
+	0x48, 0xC7, 0xC1, 0x90, 0x00, 0x00, 0x00,         /* mov rcx, 0x90 */ \
+	0xFD,                                             /* std */ \
+	0xF3, 0xA4,                                       /* rep movsb */ \
+	0x48, 0xFF, 0xC7,                                 /* inc rdi */ \
+	0x48, 0x89, 0xFC,                                 /* mov rsp, rdi */ \
+                                                      /* NO_COLLISION: */
 
+#define JMP_TO_NEXT_HANDLER \
+    0x41, 0x8B, 0x45, 0x00,   /* mov eax, dword ptr [r13] */ \
+    0x49, 0x83, 0xC5, 0x04,   /* add r13, 0x04 */ \
+    0x4C, 0x01, 0xF0,         /* add rax, r14 */ \
+    0xFF, 0xE0,               /* jmp rax */
 
 enum VMHandlerTypes
 {
