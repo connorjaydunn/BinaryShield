@@ -50,7 +50,7 @@ TODO
 ----
 
 * Bytecode encryption
-* VM context collision check
+* ~~VM context collision check~~
 * VM handler mutation
 * VM handler integrity checks
 * Multiple VM handler instances
