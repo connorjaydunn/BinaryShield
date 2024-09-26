@@ -6,6 +6,7 @@
 
 #include "vm_handler.h"
 #include "virtual_instruction.h"
+#include "util.h"
 
 class Instruction;
 

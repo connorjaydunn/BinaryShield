@@ -2,6 +2,7 @@
 
 #include <windows.h>
 #include <vector>
+#include <random>
 
 #include "vm.h"
 #include "vm_handler.h"

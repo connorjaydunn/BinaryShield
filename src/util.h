@@ -2,6 +2,7 @@
 
 #include <windows.h>
 #include <vector>
+#include <random>
 
 template <typename T>
 std::vector<BYTE> convertToByteVector(T x)
@@ -14,6 +15,8 @@ std::vector<BYTE> convertToByteVector(T x)
 
     return bytes;
 }
+
+int getRandomInt(int min, int max);
 
 DWORD align(DWORD x, DWORD alignment);
 

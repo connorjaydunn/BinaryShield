@@ -76,6 +76,8 @@ namespace VM
 		case ZYDIS_OPERAND_TYPE_POINTER: return 0;
 		case ZYDIS_OPERAND_TYPE_UNUSED: return 0;
 		}
+		
+		return 0;
 	}
 
 	bool x86MovHandler(Instruction* instruction)
@@ -434,15 +436,19 @@ namespace VM
 
 	DWORD getVmHandlerRva(VMHandlerTypes type)
 	{
+		// array of possible rvas we can return
+		std::vector<DWORD> targetHandlersRva;
+
 		for (int i = 0; i < vmHandlers.size(); i++)
 		{
 			if (vmHandlers[i].getType() == type)
 			{
-				return vmHandlers[i].getRva();
+				targetHandlersRva.push_back(vmHandlers[i].getRva());
 			}
 		}
 
-		return -1; // this will never happen so long as all vm handlers were created (maybe throw an exception here to tell the user where they went wrong)
+		// select a random handler from our array of target handlers
+		return targetHandlersRva[getRandomInt(0, targetHandlersRva.size() - 1)];
 	}
 
 	void popVmContext(Instruction* instruction)

@@ -46,30 +46,47 @@ void VMSection::addVmHandlers()
 
 	VMHandler* vmHandlers[] =
 	{
-	new Enter(), new Exit(),
-	new PushR64(), new PushR32(), new PushR16(), new PushR8(),
-	new PopR64(), new PopR32(), new PopR16(), new PopR8(),
-	new PushI64(), new PushI32(), new PushI16(), new PushI8(),
-	new PushRSP64(), new PushRSP32(), new PushRSP16(), new PushRSP8(),
-	new PopRSP64(), new PopRSP32(), new PopRSP16(), new PopRSP8(),
-	new Add64(), new Add32(), new Add16(), new Add8(),
-	new Sub64(), new Sub32(), new Sub16(), new Sub8(),
-	new Xor64(), new Xor32(), new Xor16(), new Xor8(),
-	new And64(), new And32(), new And16(), new And8(),
-	new Or64(), new Or32(), new Or16(), new Or8(),
-	new Nand64(), new Nand32(), new Nand16(), new Nand8(),
-	new Nor64(), new Nor32(), new Nor16(), new Nor8(),
-	new Shl64(), new Shl32(), new Shl16(), new Shl8(),
-	new Read64(), new Read32(), new Read16(), new Read8(),
-	new Write64(), new Write32(), new Write16(), new Write8(),
-	new Jmp(),
-	new Jne(),
+		new Enter(), new Exit(),
+		new PushR64(), new PushR32(), new PushR16(), new PushR8(),
+		new PopR64(), new PopR32(), new PopR16(), new PopR8(),
+		new PushI64(), new PushI32(), new PushI16(), new PushI8(),
+		new PushRSP64(), new PushRSP32(), new PushRSP16(), new PushRSP8(),
+		new PopRSP64(), new PopRSP32(), new PopRSP16(), new PopRSP8(),
+		new Add64(), new Add32(), new Add16(), new Add8(),
+		new Sub64(), new Sub32(), new Sub16(), new Sub8(),
+		new Xor64(), new Xor32(), new Xor16(), new Xor8(),
+		new And64(), new And32(), new And16(), new And8(),
+		new Or64(), new Or32(), new Or16(), new Or8(),
+		new Nand64(), new Nand32(), new Nand16(), new Nand8(),
+		new Nor64(), new Nor32(), new Nor16(), new Nor8(),
+		new Shl64(), new Shl32(), new Shl16(), new Shl8(),
+		new Read64(), new Read32(), new Read16(), new Read8(),
+		new Write64(), new Write32(), new Write16(), new Write8(),
+		new Jmp(),
+		new Jne(),
 	};
 
-	for (int i = 0; i < std::size(vmHandlers); i++)
-		addVmHandler(*vmHandlers[i]);
+	int vmHandlersSize = std::size(vmHandlers);
 
-	for (int i = 0; i < std::size(vmHandlers); i++)
+	// create vector of indexes we will shuffle
+	// create multiple instances of a single index will result in multiple handler instances
+	std::vector<int> indexes(vmHandlersSize);
+	for (int i = 0; i < vmHandlersSize; i++)
+	{
+		for (int j = 0; j < getRandomInt(15, 30); j++)
+			indexes.push_back(i);
+	}
+
+	// shuffle index array
+	std::random_device rd;
+	std::mt19937 g(rd());
+	std::shuffle(indexes.begin(), indexes.end(), g);
+
+	// generate a random number of handler instances
+	for (int i = 0; i < indexes.size(); i++)
+		addVmHandler(*vmHandlers[indexes[i]]);
+
+	for (int i = 0; i < vmHandlersSize; i++)
 		delete vmHandlers[i];
 }
 
@@ -77,6 +94,7 @@ void VMSection::addVmHandler(VMHandler vmHandler)
 {
 	vmHandler.setFileOffset(writePointer + pointerToRawData);
 	vmHandler.setRva(fileOffsetToRva(writePointer + pointerToRawData, virtualAddress, pointerToRawData));
+	// vmHandler.mutate();
 	VM::vmHandlers.push_back(vmHandler);
 	addBytes(vmHandler.getBytes());
 }
