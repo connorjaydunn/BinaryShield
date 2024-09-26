@@ -8,7 +8,7 @@ Features
 * Multi-Thread safe VM
 * _VM handler mutation (soon)_
 * Stack-Based, RISC VM
-* _Multiple VM handler instances (soon)_
+* Multiple VM handler instances
 * Wide range of supported opcodes
 * Trivial to implement support for new opcodes
 * _VM handler integrity checks (soon)_
@@ -53,7 +53,7 @@ TODO
 * ~~VM context collision check~~
 * VM handler mutation
 * VM handler integrity checks
-* Multiple VM handler instances
+* ~~Multiple VM handler instances~~
 * Anti-Debugger checks
 * Add function by code markers
 * Randomised VM context
