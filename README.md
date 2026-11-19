@@ -1,6 +1,6 @@
 # BinaryShield
 
-**BinaryShield** is an open-source, bin-to-bin x86-64 code virtualizer designed to offer strong protection against reverse engineering efforts. It translates commonly used x86-64 instructions into a custom bytecode, which is executed by a secure, purpose-built virtual machine. For more information on virtualization and the technical details of how the BinaryShield VM works, click [here](https://connorjaydunn.github.io/blog/posts/binaryshield-a-bin2bin-x86-64-code-virtualizer/).
+**BinaryShield** is an open-source, bin-to-bin x86-64 code virtualizer designed to offer strong protection against reverse engineering efforts. It translates commonly used x86-64 instructions into a custom bytecode, which is executed by a secure, purpose-built virtual machine.
 
 Features
 ----
